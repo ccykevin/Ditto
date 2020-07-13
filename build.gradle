@@ -1,0 +1,55 @@
+plugins {
+    id 'java-gradle-plugin'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.72'
+    id 'maven'
+    id 'com.gradle.plugin-publish' version '0.12.0'
+}
+
+group 'com.kevincheng.gradle'
+version '1.0.0'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+repositories {
+    jcenter()
+}
+
+gradlePlugin {
+    plugins {
+        ditto {
+            id = 'com.kevincheng.gradle.ditto'
+            implementationClass = 'com.kevincheng.gradle.DittoPlugin'
+        }
+    }
+}
+
+pluginBundle {
+    description = "Ditto is a plugin that can easily adapt the layout to different Android devices to make sure users are getting same user experience."
+    website = "https://github.com/ccykevin/Ditto"
+    vcsUrl = "https://github.com/ccykevin/Ditto"
+    tags = ["ditto", "android", "kotlin", "dimens", "dimension", "sw", "smallest width", "xml", "generate", "design", "layout", "adaptation"]
+
+    plugins {
+        ditto {
+            displayName = "Ditto"
+        }
+    }
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri('./repo'))
+        }
+    }
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.72"
+}
