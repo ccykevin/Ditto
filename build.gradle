@@ -29,10 +29,10 @@ gradlePlugin {
 }
 
 pluginBundle {
-    description = "Ditto is a plugin that can easily adapt the layout to different Android devices to make sure users are getting same user experience."
+    description = "Ditto is a Gradle plugin that can easily adapt the layout to different Android devices to ensure that users get the same user experience."
     website = "https://github.com/ccykevin/Ditto"
     vcsUrl = "https://github.com/ccykevin/Ditto"
-    tags = ["ditto", "android", "kotlin", "dimens", "dimension", "sw", "smallest width", "xml", "generate", "design", "layout", "adaptation"]
+    tags = ["ditto", "android", "kotlin", "dimens", "dimension", "sw", "smallest width", "xml", "generate", "design", "layout", "screen", "adaptation"]
 
     plugins {
         ditto {
