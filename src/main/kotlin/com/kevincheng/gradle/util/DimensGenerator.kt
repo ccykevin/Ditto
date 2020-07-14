@@ -13,13 +13,22 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 class DimensGenerator(project: Project) {
 
-    private val resources = File("${project.buildFile.parent}\\src\\main\\res\\")
+    private val os: OS
+    private val resources: File
     private val valuesDirRegex = "([\\w-.]+)".toRegex()
+    private val swDirRegex = "(sw[\\d]+dp)".toRegex()
     private val documentBuilderFactory = DocumentBuilderFactory.newInstance()
     private val dpUnit = "dp"
     private val spUnit = "sp"
     private val positiveFormat: String = "%1\$s_%2\$s"
     private val negativeFormat: String = "%1\$s_minus_%2\$s"
+
+    init {
+        os = requireNotNull("([/\\\\])".toRegex().find(project.buildFile.parent))
+            .groupValues[1]
+            .let { OS.fromSeparator(it) }
+        resources = File(os.fixPath("${project.buildFile.parent}/src/main/res/"))
+    }
 
     fun generateDimens(dimens: ArrayList<DittoExtension.Dimens>) {
         dimens.forEach {
@@ -47,19 +56,18 @@ class DimensGenerator(project: Project) {
             if (design.dimens.isEmpty()) throw UnknownError("source of dimens is not configured.")
 
             design.dimens.forEach { dimensPath ->
-                val dimens = File(resources, dimensPath)
-                if (!dimens.exists()) throw UnknownError("$dimensPath not found.")
+                val dimens = File(resources, os.fixPath(dimensPath))
+                if (!dimens.exists()) throw UnknownError("${dimens.absolutePath} not found.")
 
                 val info = valuesDirRegex.findAll(dimensPath).map { it.groupValues[1] }.toList()
                 val valuesDirName = info.first()
                 val dimensFileName = info.last()
-                val swRegex = "(sw[\\d]+dp)".toRegex()
                 val dimensMap = dimens.getDimens()
 
                 design.adaptSw.forEach { targetSW ->
                     val targetSwName = "sw${targetSW.toInt()}dp"
-                    val targetSwDirName = when (valuesDirName.contains(swRegex)) {
-                        true -> valuesDirName.replace(swRegex, targetSwName)
+                    val targetSwDirName = when (valuesDirName.contains(swDirRegex)) {
+                        true -> valuesDirName.replace(swDirRegex, targetSwName)
                         false -> valuesDirName.replace("values", "values-$targetSwName")
                     }
                     val targetSwXml = createXmlFile(targetSwDirName, dimensFileName)
@@ -134,5 +142,21 @@ class DimensGenerator(project: Project) {
         }
         println("</resources>")
         close()
+    }
+
+    private enum class OS(val separator: String) {
+        Unix("/"), Windows("\\");
+
+        fun fixPath(path: String): String {
+            return when(this) {
+                Unix -> path.replace(Windows.separator, Unix.separator)
+                Windows -> path.replace(Unix.separator, Windows.separator)
+            }
+        }
+
+        companion object {
+            private val separators = values().associateBy { it.separator }
+            fun fromSeparator(separator: String): OS = requireNotNull(separators[separator])
+        }
     }
 }
