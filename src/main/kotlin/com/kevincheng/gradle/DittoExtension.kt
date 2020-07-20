@@ -73,6 +73,7 @@ open class DittoExtension @Inject constructor(private val project: Project) {
             411.4285,
             432.0,
             480.0,
+            485.3333,
             533.0,
             592.0,
             600.0,
