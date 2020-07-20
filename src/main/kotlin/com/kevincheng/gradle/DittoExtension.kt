@@ -91,6 +91,7 @@ open class DittoExtension @Inject constructor(private val project: Project) {
             1280.0,
             1365.0
         )
+        var fileNameSuffix: String = "_gen"
 
         fun sw(smallestWidth: Double) {
             sw = smallestWidth
@@ -103,6 +104,10 @@ open class DittoExtension @Inject constructor(private val project: Project) {
         fun adaptSw(vararg smallestWidths: Double) {
             adaptSw.clear()
             adaptSw.addAll(smallestWidths.toTypedArray())
+        }
+
+        fun fileNameSuffix(suffix: String) {
+            fileNameSuffix = suffix
         }
     }
 }

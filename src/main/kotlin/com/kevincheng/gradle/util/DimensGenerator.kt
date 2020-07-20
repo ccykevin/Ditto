@@ -61,7 +61,10 @@ class DimensGenerator(project: Project) {
 
                 val info = valuesDirRegex.findAll(dimensPath).map { it.groupValues[1] }.toList()
                 val valuesDirName = info.first()
-                val dimensFileName = info.last()
+                val dimensFileName = when(design.fileNameSuffix.isNotEmpty()) {
+                    true -> info.last().replace(".xml", "${design.fileNameSuffix}.xml")
+                    false -> info.last()
+                }
                 val dimensMap = dimens.getDimens()
 
                 design.adaptSw.forEach { targetSW ->
